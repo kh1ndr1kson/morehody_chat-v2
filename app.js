@@ -4,14 +4,16 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
+const cors = require('cors');
 
 var room = require('./routes/room');
 var chat = require('./routes/chat');
 var app = express();
+app.use(cors({ origin: true, credentials: true }));
 
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
-mongoose.connect('mongodb://localhost:27017/mevn-chat', { useNewUrlParser: true, promiseLibrary: require('bluebird') })
+mongoose.connect('mongodb+srv://root:root@cluster0.g346r.mongodb.net/chatDB?retryWrites=true&w=majority', { useNewUrlParser: true, promiseLibrary: require('bluebird') })
   .then(() =>  console.log('connection succesful'))
   .catch((err) => console.error(err));
 
