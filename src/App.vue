@@ -1,12 +1,19 @@
 <template>
-  <div id="app">
-      <router-view/>
+  <div id="app" class="container">
+    <b-row>
+      <room-list />
+      <chat-room />
+    </b-row>
   </div>
 </template>
 
 <script>
+import RoomList from "@/components/RoomList";
+import ChatRoom from "@/components/ChatRoom";
+
 export default {
-  name: "App"
+  name: "App",
+  components: { RoomList, ChatRoom }
 };
 </script>
 

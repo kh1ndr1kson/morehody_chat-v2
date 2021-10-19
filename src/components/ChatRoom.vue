@@ -35,7 +35,7 @@
             </div>
             <p>{{ item.message }}</p>
           </div>
-        </div> -->
+        </div>
         <div class="right clearfix" v-else>
           <b-img right src="http://placehold.it/50/55C1E7/fff&text=U" rounded="circle" width="75" height="75" alt="img" class="m-1" />
           <div class="chat-body clearfix">
@@ -45,7 +45,7 @@
             </div>
             <p>{{ item.message }}</p>
           </div>
-        </div>
+        </div> -->
       </b-list-group-item>
     </b-list-group>
     <ul v-if="errors && errors.length">
