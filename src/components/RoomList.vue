@@ -1,8 +1,6 @@
 <template>
   <b-col cols="4">
-    <b-button size="sm" variant="success" class="mb-2" to="add-room">
-      Создать комнату
-    </b-button>
+    <modal-window @newRoom="pushNewRoom" />
     <!-- <b-table striped hover :items="rooms" :fields="fields">
       <template slot="actions" scope="row">
         <b-btn size="sm" @click.stop="join(row.item._id)">Join</b-btn>
@@ -18,8 +16,13 @@
         :disabled="dis(room._id)"
       >
       <div class="d-flex w-100 align-items-center justify-content-between">
-        <strong class="mb-1">{{room.room_name}}</strong>
-        <small>{{room.created_date}}</small>
+        <strong class="mb-1">{{room.name}}</strong>
+        <div class="actions">
+          <b-dropdown id="dropdown-dropright" dropright size="sm" variant="outline" class="m-2">
+            <b-dropdown-item-button>Изменить</b-dropdown-item-button>
+            <b-dropdown-item-button @click="deleteRoom(room)" class="text-danger">Удалить</b-dropdown-item-button>
+          </b-dropdown>
+        </div>
       </div>
     </b-list-group-item>
     </b-list-group>
@@ -33,9 +36,13 @@
 
 <script>
 import axios from "axios";
+import ModalWindow from "@/components/ModalWindow";
 
 export default {
   name: "RoomList",
+  components: {
+    ModalWindow
+  },
   data() {
     return {
       rooms: [],
@@ -73,6 +80,21 @@ export default {
         if (this.selected !== room_id) return true;
         else return false;
       } else false;
+    },
+    pushNewRoom(room) {
+      this.rooms.push(room);
+    },
+    deleteRoom(item) {
+      axios
+        .delete(`http://localhost:3000/api/room/${item._id}`)
+        .then(response => {
+          //this.editedIndex = this.rooms.indexOf(item);
+          this.rooms.splice(this.rooms.indexOf(item), 1);
+          //this.rooms = response.data;
+        })
+        .catch(e => {
+          this.errors.push(e);
+        });
     }
   }
 };
@@ -85,5 +107,17 @@ export default {
 
 .lgi.disabled {
   cursor: not-allowed;
+}
+
+.actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+}
+
+.actions > div {
+  margin: 0 !important;
+  height: 100%;
 }
 </style>

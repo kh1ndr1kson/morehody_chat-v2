@@ -1,7 +1,7 @@
 <template>
   <b-col cols="8">
-    <b-btn size="sm" variant="light" disabled>{{selectedRoom}}</b-btn> - <b-btn size="sm" @click.stop="logout()">Logout</b-btn>
-    <b-list-group v-chat-scroll>
+    <b-btn size="sm" variant="light" disabled>{{room.name}}</b-btn><b-button size="sm" variant="outline-danger" @click.stop="logout()">Выйти</b-button>
+    <b-list-group v-chat-scroll class="mt-2">
       <b-list-group-item v-for="(item, index) in chats">
         <div v-if="item.nickname === nickname">
           <!-- <b-avatar src="https://placekitten.com/300/300"></b-avatar> -->
@@ -17,40 +17,8 @@
           </div>
           <span>{{ item.message }}</span>
         </div>
-        <!-- <b-card v-if="item.nickname === nickname">
-          <b-card-title>{{ item.nickname }}</b-card-title>
-          <b-card-text>
-            {{ item.message }}
-          </b-card-text>
-          <b-card-text class="small text-muted">{{ item.created_date }}</b-card-text>
-        </b-card> -->
-        <!-- <div class="left clearfix" v-if="item.nickname === nickname">
-          <b-img left src="http://placehold.it/50/55C1E7/fff&text=ME" rounded="circle" width="75" height="75" alt="img" class="m-1" />
-          <div class="chat-body clearfix">
-            <div class="header">
-              <strong class="primary-font">{{ item.nickname }}</strong> <small class="pull-right text-muted">
-              <span class="glyphicon glyphicon-time"></span>{{ item.created_date }}</small>
-            </div>
-            <p>{{ item.message }}</p>
-          </div>
-        </div>
-        <div class="right clearfix" v-else>
-          <b-img right src="http://placehold.it/50/55C1E7/fff&text=U" rounded="circle" width="75" height="75" alt="img" class="m-1" />
-          <div class="chat-body clearfix">
-            <div class="header">
-              <strong class="primary-font">{{ item.nickname }}</strong> <small class="pull-right text-muted">
-              <span class="glyphicon glyphicon-time"></span>{{ item.created_date }}</small>
-            </div>
-            <p>{{ item.message }}</p>
-          </div>
-        </div> -->
       </b-list-group-item>
     </b-list-group>
-    <!-- <ul v-if="errors && errors.length">
-      <li v-for="error of errors">
-        {{error.message}}
-      </li>
-    </ul> -->
     <b-form id="form" @submit="onSubmit">
       <b-form-textarea
         id="message"
@@ -60,12 +28,6 @@
         placeholder="Введите сообщение..."
         v-model.trim="chat.message"
       ></b-form-textarea><b-btn type="submit" variant="info">Send</b-btn>
-      <!-- <b-input-group prepend="Message">
-        <b-form-input id="message" :state="state" v-model.trim="chat.message"></b-form-input>
-        <b-input-group-append>
-          <b-btn type="submit" variant="info">Send</b-btn>
-        </b-input-group-append>
-      </b-input-group> -->
     </b-form>
   </b-col>
 </template>
@@ -86,12 +48,20 @@ export default {
       errors: [],
       nickname: "tempNickname",
       chat: {},
+      room: {},
       socket: io("http://localhost:4000")
     };
   },
   props: ["selectedRoom"],
   created() {
     this.getChats();
+
+    axios
+      .get(`http://localhost:3000/api/room/${this.selectedRoom}`)
+      .then(response => {
+        this.room = response.data;
+      })
+      .catch(e => console.log(e));
 
     this.socket.on(
       "new-message",
