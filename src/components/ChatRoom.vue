@@ -1,19 +1,17 @@
 <template>
-  <b-col cols="8" class="mt-2">
-    <h2>
-      Chat Room - <b-btn size="sm" @click.stop="logout()">Logout</b-btn>
-    </h2>
+  <b-col cols="8">
+    <b-btn size="sm" variant="light" disabled>{{selectedRoom}}</b-btn> - <b-btn size="sm" @click.stop="logout()">Logout</b-btn>
     <b-list-group v-chat-scroll>
       <b-list-group-item v-for="(item, index) in chats">
         <div v-if="item.nickname === nickname">
-          <b-avatar src="https://placekitten.com/300/300"></b-avatar>
+          <!-- <b-avatar src="https://placekitten.com/300/300"></b-avatar> -->
           <div class="d-flex justify-content-between">
             <b>{{ item.nickname }}</b> <small class="text-muted">{{ item.created_date }}</small>
           </div>
           <span>{{ item.message }}</span>
         </div>
         <div v-else>
-          <b-avatar src="https://placekitten.com/300/300"></b-avatar>
+          <!-- <b-avatar src="https://placekitten.com/300/300"></b-avatar> -->
           <div class="d-flex justify-content-between">
             <b>{{ item.nickname }}</b> <small class="text-muted">{{ item.created_date }}</small>
           </div>
@@ -48,19 +46,20 @@
         </div> -->
       </b-list-group-item>
     </b-list-group>
-    <ul v-if="errors && errors.length">
+    <!-- <ul v-if="errors && errors.length">
       <li v-for="error of errors">
         {{error.message}}
       </li>
-    </ul>
+    </ul> -->
     <b-form id="form" @submit="onSubmit">
       <b-form-textarea
         id="message"
         size="sm"
         rows="4"
+        class="mt-2"
         placeholder="Введите сообщение..."
-        :state="state" v-model.trim="chat.message"
-      ></b-form-textarea>
+        v-model.trim="chat.message"
+      ></b-form-textarea><b-btn type="submit" variant="info">Send</b-btn>
       <!-- <b-input-group prepend="Message">
         <b-form-input id="message" :state="state" v-model.trim="chat.message"></b-form-input>
         <b-input-group-append>
@@ -76,6 +75,7 @@ import Vue from "vue";
 import axios from "axios";
 import * as io from "socket.io-client";
 import VueChatScroll from "vue-chat-scroll";
+
 Vue.use(VueChatScroll);
 
 export default {
@@ -84,46 +84,49 @@ export default {
     return {
       chats: [],
       errors: [],
-      nickname: this.$route.params.nickname,
+      nickname: "tempNickname",
       chat: {},
       socket: io("http://localhost:4000")
     };
   },
+  props: ["selectedRoom"],
   created() {
-    axios
-      .get(`http://localhost:3000/api/chat/` + this.$route.params.id)
-      .then(response => {
-        this.chats = response.data;
-      })
-      .catch(e => {
-        this.errors.push(e);
-      });
+    this.getChats();
 
     this.socket.on(
       "new-message",
       function(data) {
-        if (data.message.room === this.$route.params.id) {
+        console.log(data);
+        if (data.message.room === this.selectedRoom) {
           this.chats.push(data.message);
         }
       }.bind(this)
     );
   },
   methods: {
+    getChats() {
+      axios
+        .get(`http://localhost:3000/api/chat/` + this.selectedRoom)
+        .then(response => {
+          this.chats = response.data;
+        })
+        .catch(e => {
+          this.errors.push(e);
+        });
+    },
     logout() {
-      this.socket.emit("save-message", {
-        room: this.chat.room,
-        nickname: this.chat.nickname,
-        message: this.chat.nickname + " left this room",
-        created_date: new Date()
-      });
-      this.$router.push({
-        name: "RoomList"
-      });
+      // this.socket.emit("save-message", {
+      //   room: this.chat.room,
+      //   nickname: this.chat.nickname,
+      //   message: this.chat.nickname + " left this room",
+      //   created_date: new Date()
+      // });
+      this.$emit("unsetSelectedRoom", "");
     },
     onSubmit(evt) {
       evt.preventDefault();
-      this.chat.room = this.$route.params.id;
-      this.chat.nickname = this.$route.params.nickname;
+      this.chat.room = this.selectedRoom;
+      this.chat.nickname = "tempNickname";
       axios
         .post(`http://localhost:3000/api/chat`, this.chat)
         .then(response => {

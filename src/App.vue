@@ -1,8 +1,8 @@
 <template>
   <div id="app" class="container">
     <b-row>
-      <room-list />
-      <chat-room />
+      <room-list @sendRoomId="getRoom" :selectedRoom="selectedRoom" />
+      <chat-room @unsetSelectedRoom="unsetRoom" v-if="selectedRoom" :selectedRoom="selectedRoom" />
     </b-row>
   </div>
 </template>
@@ -13,7 +13,20 @@ import ChatRoom from "@/components/ChatRoom";
 
 export default {
   name: "App",
-  components: { RoomList, ChatRoom }
+  components: { RoomList, ChatRoom },
+  data() {
+    return {
+      selectedRoom: ""
+    };
+  },
+  methods: {
+    getRoom(id) {
+      this.selectedRoom = id;
+    },
+    unsetRoom(id) {
+      this.selectedRoom = "";
+    }
+  }
 };
 </script>
 

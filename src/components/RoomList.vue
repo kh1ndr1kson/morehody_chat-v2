@@ -12,8 +12,10 @@
       <b-list-group-item
         v-for="room in rooms"
         :key="room._id"
-        @click.stop="join(room._id)"
+        @click="join(room._id)"
         class="lgi"
+        button
+        :disabled="dis(room._id)"
       >
       <div class="d-flex w-100 align-items-center justify-content-between">
         <strong class="mb-1">{{room.room_name}}</strong>
@@ -40,6 +42,17 @@ export default {
       errors: []
     };
   },
+  props: ["selectedRoom"],
+  computed: {
+    selected: {
+      get() {
+        return this.selectedRoom;
+      },
+      set() {
+        return "";
+      }
+    }
+  },
   created() {
     axios
       .get(`http://localhost:3000/api/room`)
@@ -52,11 +65,14 @@ export default {
   },
   methods: {
     join(id) {
-      console.log(id);
-      this.$router.push({
-        name: "JoinRoom",
-        params: { id: id }
-      });
+      this.selected = id;
+      this.$emit("sendRoomId", id);
+    },
+    dis(room_id) {
+      if (this.selected || this.selectedRoom) {
+        if (this.selected !== room_id) return true;
+        else return false;
+      } else false;
     }
   }
 };
@@ -65,5 +81,9 @@ export default {
 <style scoped>
 .lgi:hover {
   cursor: pointer;
+}
+
+.lgi.disabled {
+  cursor: not-allowed;
 }
 </style>
