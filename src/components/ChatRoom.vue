@@ -49,7 +49,7 @@ export default {
       nickname: "tempNickname",
       chat: {},
       room: {},
-      socket: io("http://localhost:4000")
+      socket: io("http://5.101.112.226:4000")
     };
   },
   props: ["selectedRoom"],
@@ -57,7 +57,7 @@ export default {
     this.getChats();
 
     axios
-      .get(`http://localhost:3000/api/room/${this.selectedRoom}`)
+      .get(`http://5.101.112.226:3000/api/room/${this.selectedRoom}`)
       .then(response => {
         this.room = response.data;
       })
@@ -76,7 +76,7 @@ export default {
   methods: {
     getChats() {
       axios
-        .get(`http://localhost:3000/api/chat/` + this.selectedRoom)
+        .get(`http://5.101.112.226:3000/api/chat/` + this.selectedRoom)
         .then(response => {
           this.chats = response.data;
         })
@@ -98,7 +98,7 @@ export default {
       this.chat.room = this.selectedRoom;
       this.chat.nickname = "tempNickname";
       axios
-        .post(`http://localhost:3000/api/chat`, this.chat)
+        .post(`http://5.101.112.226:3000/api/chat`, this.chat)
         .then(response => {
           this.socket.emit("save-message", response.data);
           this.chat.message = "";

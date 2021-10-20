@@ -62,7 +62,7 @@ export default {
   },
   created() {
     axios
-      .get(`http://localhost:3000/api/room`)
+      .get(`http://5.101.112.226:3000/api/room`)
       .then(response => {
         this.rooms = response.data;
       })
@@ -86,7 +86,7 @@ export default {
     },
     deleteRoom(item) {
       axios
-        .delete(`http://localhost:3000/api/room/${item._id}`)
+        .delete(`http://5.101.112.226:3000/api/room/${item._id}`)
         .then(response => {
           //this.editedIndex = this.rooms.indexOf(item);
           this.rooms.splice(this.rooms.indexOf(item), 1);
