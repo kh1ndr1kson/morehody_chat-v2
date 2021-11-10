@@ -51,7 +51,7 @@ export default {
     },
     handleSubmit() {
       axios
-        .post(`http://5.101.112.226:3000/api/room`, this.room)
+        .post(`http://localhost:3000/api/room`, this.room)
         .then(response => {
           this.alertShow = true;
           this.$emit("newRoom", response.data);
